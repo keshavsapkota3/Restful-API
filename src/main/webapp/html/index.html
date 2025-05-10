@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+  <title>Hello</title>
+
+</head>
+
+<body>
+  <script>
+    var lego = new Object();
+    lego.id = 1;
+    lego.run = 1;
+    lego.speed = 30;
+    lego.turn = 0;
+    function sendData(form) {
+      lego.speed = form.speed.value;
+      var json = JSON.stringify(lego);
+      var xhttp = new XMLHttpRequest();
+
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var settings = JSON.parse(this.responseText);
+          document.getElementById("settings").innerHTML = "ID=" + settings.id + " Run=" + settings.run + " Speed=" + settings.speed + " Turn=" + settings.turn;
+        }
+      };
+
+      xhttp.open("POST", "/demo/rest/lego/setvalues", true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.send(json);
+    }
+    function turnLeft(form) {
+      lego.turn = lego.turn - 10;
+      sendData(form);
+    }
+    function turnRight(form) {
+      lego.turn = lego.turn + 10;
+      sendData(form);
+    }
+    function stoplego(form) {
+      lego.run = 0;
+      sendData(form);
+    }
+  </script>
+  <h1>Lego Settings!</h1>
+  <h3>Lego</h3>
+  <p id='lego'>
+  </p>
+  <h3>New values</h3>
+  <form id='legoform'>
+    Speed: <input type='text' name='speed' value=''><br>
+    <input type='button' name='left' value='Left' onclick='turnLeft(this.form);'>
+    <input type='button' name='right' value='Right' onclick='turnRight(this.form);'>
+    <input type='button' name='stop' value='STOP' onclick='stoplego(this.form);'>
+    <input type='button' name='ok' value='OK' onclick='sendData(this.form);'>
+  </form>
+  <p id='settings'>
+  </p>
+</body>
+
+</html>
